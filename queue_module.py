@@ -17,11 +17,11 @@ async def handle_prompt(message: Message, prompt=None, queue_message=None):
 
     if account_index is None:
         # Отправляем сообщение о том, что оба аккаунта заняты
-        queue_message = await message.answer("Оба аккаунта заняты, запрос будет выполнен, как только освободится место.")
+        queue_message = await message.answer("Сейчас дорисую всё из очереди, и примусь за ваш запрос")
         waiting_queue.append((message, prompt, queue_message))
     else:
         # Отправляем сообщение о начале генерации и сохраняем его для последующего удаления
-        status_message = await message.answer(f"Генерирую изображение с использованием аккаунта {account_index + 1}...")
+        status_message = await message.answer(f"Рисую...")
 
         # Запускаем генерацию
         asyncio.create_task(handle_generation(prompt, message, account_index, status_message, queue_message))
@@ -43,7 +43,7 @@ async def handle_generation(prompt, message: Message, account_index, status_mess
         await message.bot.send_photo(
             message.chat.id,
             BufferedInputFile(image_data, filename="generated_image.jpg"),
-            caption="Вот ваше изображение!",
+            caption="Вот ваше произведение!",
             reply_to_message_id=message.message_id
         )
     finally:
