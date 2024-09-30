@@ -1,25 +1,22 @@
-import asyncio, logging, sys
+import logging
+import asyncio
+
 from aiogram import Bot, Dispatcher
-# from aiogram.client.session.aiohttp import AiohttpSession
-from handlers import personal_chat, xyapi_chat
+from handlers.personal_chat import router as personal_router
+from handlers.xyapi_chat import router as xyapi_router
+
 from config import TG_TOKEN
+
 
 logging.basicConfig(level=logging.INFO)
 
 bot = Bot(token=TG_TOKEN)
 dp = Dispatcher()
-# dp.message.filter(lambda message: message.from_user.is_bot == True)
 
-async def main() -> None:
-    dp.include_routers(personal_chat.router, xyapi_chat.router)
+# Запуск бота
+async def main():
+    dp.include_routers(xyapi_router, personal_router)
     await dp.start_polling(bot)
 
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, stream=sys.stdout)
+if __name__ == '__main__':
     asyncio.run(main())
-
-# try:
-#     session = AiohttpSession(proxy='http://proxy.server:3128')
-#     bot = Bot(token=TG_TOKEN, session=session)
-# except:
-#     bot = Bot(token=TG_TOKEN)

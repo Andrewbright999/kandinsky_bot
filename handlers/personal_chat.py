@@ -1,29 +1,20 @@
-import asyncio
-from aiogram.filters import Command
 from aiogram import Router, F
-from aiogram.types import Message, FSInputFile
-from kadinsky import create_image
+from aiogram.filters import Command
+from aiogram.types import Message
 
-
+from queue_module import handle_prompt
 
 
 router = Router()
 router.message.filter(F.chat.type == "private")
-queue = asyncio.Queue()
 
 
-@router.message(Command("start")) 
-async def cmd_start(message: Message):
-    await message.answer("Привет, я Кандинский и могу нарисовать, то что ты захочешь 🎨")
+@router.message(Command("start"))
+async def send_welcome(message: Message):
+    await message.answer("Привет! Отправь мне промт, и я сгенерирую изображение на его основе!")
 
+# Обработчик сообщений с промтами
+@router.message()
+async def handle_message(message: Message):
 
-@router.message(F.text)
-async def message_with_text(message: Message):
-    await message.answer(f"Рисую...")
-    path = await create_image(message.text, message.chat.id)
-    photo = FSInputFile(f"{path}", "rb")
-    print(f"Done {message.text}")
-    await message.reply_photo(photo)
-
-        
-
+    await handle_prompt(message)
